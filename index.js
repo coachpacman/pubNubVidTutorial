@@ -22,6 +22,14 @@ function login(form) {
     	session.connected(function(session){ video_out.appendChild(session.video) })
     	session.ended(function(session) { ctrl.getVideoElement(session.number).remove() })
 	})
+
+	ctrl.videoToggled(function(session, isEnabled){
+		ctrl.getVideoElement(session.number).toggle(isEnabled); // Hide video is stream paused
+	})
+
+	ctrl.audioToggled(function(session, isEnabled){
+		ctrl.getVideoElement(session.number).css("opacity",isEnabled ? 1 : 0.75); // 0.75 opacity is audio muted
+	})
 	
 	return false
 }
@@ -35,9 +43,25 @@ function makeCall(form){
 	ctrl.isOnline(num, function(isOn){
 		console.log('isOn variable in dialing function. I need this to return true:', isOn)
 		console.log('number I am calling:', num)
-		if (isOn) ctrl.dial(num);
+		if (!isOn) ctrl.dial(num);
 		else alert("User if Offline");
 	});
 
 	return false
+}
+
+function end(){
+	ctrl.hangup();
+}
+
+function mute(){
+	var audio = ctrl.toggleAudio();
+	if (!audio) $("#mute").html("Unmute");
+	else $("#mute").html("Mute");
+}
+
+function pause(){
+	var video = ctrl.toggleVideo();
+	if (!video) $('#pause').html('Unpause');
+	else $('#pause').html('Pause');
 }
